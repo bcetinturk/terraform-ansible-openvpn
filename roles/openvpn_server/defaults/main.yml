@@ -1,0 +1,2 @@
+pki_directory: /tmp/pki
+openvpn_server_directory: /etc/openvpn/server

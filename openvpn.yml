@@ -1,0 +1,5 @@
+- name: Set Up OpenVPN Server
+  hosts: all
+  become: true
+  roles:
+    - openvpn_server

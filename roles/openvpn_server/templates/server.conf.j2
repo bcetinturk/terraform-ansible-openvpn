@@ -1,0 +1,46 @@
+port 1194
+proto udp
+dev tun
+
+ca ca.crt
+cert server.crt
+key server.key
+
+dh none
+server 10.8.0.0 255.255.255.0
+
+ifconfig-pool-persist /var/log/openvpn/ipp.txt
+
+keepalive 10 120
+
+tls-auth ta.key 0
+
+cipher AES-256-GCM
+auth SHA256
+
+user nobody
+group nobody
+
+persist-key
+persist-tun
+
+status /var/log/openvpn/openvpn-status.log
+
+;log         /var/log/openvpn/openvpn.log
+;log-append  /var/log/openvpn/openvpn.log
+
+# Set the appropriate level of log
+# file verbosity.
+#
+# 0 is silent, except for fatal errors
+# 4 is reasonable for general usage
+# 5 and 6 can help to debug connection problems
+# 9 is extremely verbose
+verb 3
+
+explicit-exit-notify 1
+
+# TODO: Check other push options
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 208.67.222.222"
+push "dhcp-option DNS 208.67.220.220"

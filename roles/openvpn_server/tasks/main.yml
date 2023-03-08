@@ -1,0 +1,84 @@
+- name: Install OpenVPN
+  ansible.builtin.apt:
+    name:
+      - openvpn
+    state: present
+    update_cache: true
+
+- name: Create PKI Directory
+  ansible.builtin.file:
+    path: "{{ pki_directory }}"
+    state: directory
+    mode: "0600"
+
+- name: Create Private Key for CA
+  community.crypto.openssl_privatekey:
+    path: "{{ pki_directory }}/ca.key"
+    type: ECC
+    curve: secp384r1
+
+- name: Create CSR for CA
+  community.crypto.openssl_csr:
+    path: "{{ pki_directory }}/ca.csr"
+    privatekey_path: "{{ pki_directory }}/ca.key"
+    common_name: OpenVPN CA
+
+- name: Create Certificate for CA
+  community.crypto.x509_certificate:
+    path: "{{ pki_directory }}/ca.crt"
+    privatekey_path: "{{ pki_directory }}/ca.key"
+    csr_path: "{{ pki_directory }}/ca.csr"
+    provider: selfsigned
+
+- name: Create Private Key for Server
+  community.crypto.openssl_privatekey:
+    path: "{{ pki_directory }}/server.key"
+    type: ECC
+    curve: secp384r1
+
+- name: Create CSR
+  community.crypto.openssl_csr:
+    path: "{{ pki_directory }}/server.csr"
+    privatekey_path: "{{ pki_directory }}/server.key"
+    mode: "0400"
+    common_name: OpenVPN Server
+
+- name: Sign Server Certificate
+  community.crypto.x509_certificate:
+    path: "{{ pki_directory }}/server.crt"
+    csr_path: "{{ pki_directory }}/server.csr"
+    ownca_path: "{{ pki_directory }}/ca.crt"
+    ownca_privatekey_path: "{{ pki_directory }}/ca.key"
+    provider: ownca
+
+- name: Create Shared Key
+  ansible.builtin.command:
+    cmd: openvpn --genkey --secret {{ openvpn_server_directory }}/ta.key
+    creates: "{{ openvpn_server_directory }}/ta.key"
+
+- name: Create Client Key
+  community.crypto.openssl_privatekey:
+    path: "{{ pki_directory }}/client.key"
+    type: ECC
+    curve: secp384r1
+
+- name: Create Client CSR
+  community.crypto.openssl_csr:
+    path: "{{ pki_directory }}/client.csr"
+    privatekey_path: "{{ pki_directory }}/client.key"
+    mode: "0400"
+    common_name: OpenVPN Client
+
+- name: Sign Client Certificate
+  community.crypto.x509_certificate:
+    path: "{{ pki_directory }}/client.crt"
+    csr_path: "{{ pki_directory }}/client.csr"
+    ownca_path: "{{ pki_directory }}/ca.crt"
+    ownca_privatekey_path: "{{ pki_directory }}/ca.key"
+    provider: ownca
+
+- name: Copy Server Configuration File
+  ansible.builtin.template:
+    src: server.conf.j2
+    dest: /etc/openvpn/server/server.conf
+    mode: "0644"
