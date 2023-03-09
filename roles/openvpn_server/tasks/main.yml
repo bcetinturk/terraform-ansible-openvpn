@@ -56,27 +56,6 @@
     cmd: openvpn --genkey --secret {{ openvpn_server_directory }}/ta.key
     creates: "{{ openvpn_server_directory }}/ta.key"
 
-- name: Create Client Key
-  community.crypto.openssl_privatekey:
-    path: "{{ pki_directory }}/client.key"
-    type: ECC
-    curve: secp384r1
-
-- name: Create Client CSR
-  community.crypto.openssl_csr:
-    path: "{{ pki_directory }}/client.csr"
-    privatekey_path: "{{ pki_directory }}/client.key"
-    mode: "0400"
-    common_name: OpenVPN Client
-
-- name: Sign Client Certificate
-  community.crypto.x509_certificate:
-    path: "{{ pki_directory }}/client.crt"
-    csr_path: "{{ pki_directory }}/client.csr"
-    ownca_path: "{{ pki_directory }}/ca.crt"
-    ownca_privatekey_path: "{{ pki_directory }}/ca.key"
-    provider: ownca
-
 - name: Copy Server Configuration File
   ansible.builtin.template:
     src: server.conf.j2
@@ -138,3 +117,7 @@
     - port: 22
       proto: tcp
   notify: restart UFW
+
+- name: Import Client Configuration Tasks
+  ansible.builtin.include_tasks:
+    file: client_config.yml

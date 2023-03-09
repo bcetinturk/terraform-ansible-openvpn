@@ -1,2 +1,7 @@
 pki_directory: /tmp/pki
 openvpn_server_directory: /etc/openvpn/server
+client_configuration_directory: /usr/share/client_configs
+target_type: terraform
+
+# Where to download client's ovpn file
+client_configuration_file_target: .
