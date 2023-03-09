@@ -1,0 +1,16 @@
+- name: Dsiable UFW
+  listen: restart UFW
+  community.general.ufw:
+    state: disabled
+
+- name: Enable UFW
+  listen: restart UFW
+  community.general.ufw:
+    state: enabled
+
+- name: Restart OpenVPN Server Service
+  listen: restart OpenVPN Server
+  ansible.builtin.service:
+    name: openvpn-server@server.service
+    state: restarted
+    enabled: true
