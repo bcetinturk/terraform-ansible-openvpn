@@ -22,6 +22,11 @@
     path: "{{ pki_directory }}/ca.csr"
     privatekey_path: "{{ pki_directory }}/ca.key"
     common_name: OpenVPN CA
+    key_usage:
+      - keyCertSign
+      - cRLSign
+    basic_constraints:
+      - CA:TRUE
 
 - name: Create Certificate for CA
   community.crypto.x509_certificate:
@@ -42,6 +47,13 @@
     privatekey_path: "{{ pki_directory }}/server.key"
     mode: "0400"
     common_name: OpenVPN Server
+    basic_constraints:
+      - CA:FALSE
+    extended_key_usage:
+      - serverAuth
+    key_usage:
+      - digitalSignature
+      - keyAgreement
 
 - name: Sign Server Certificate
   community.crypto.x509_certificate:

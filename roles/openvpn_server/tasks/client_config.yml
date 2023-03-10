@@ -16,6 +16,12 @@
     privatekey_path: "{{ pki_directory }}/client.key"
     mode: "0400"
     common_name: OpenVPN Client
+    key_usage:
+      - digitalSignature
+    extended_key_usage:
+      - clientAuth
+    basic_constraints:
+      - CA:FALSE
 
 - name: Sign Client Certificate
   community.crypto.x509_certificate:
