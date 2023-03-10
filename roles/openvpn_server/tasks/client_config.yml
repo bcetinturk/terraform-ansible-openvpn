@@ -58,7 +58,7 @@
 - name: Set Server IP to Vagrant IP
   when: target_type == "vagrant"
   ansible.builtin.set_fact:
-    vpn_server_ip: "{{ ansible_default_ipv4.address }}"
+    vpn_server_ip: "{{ machine_ip }}"
 
 - name: Set Variables for Client Configuration Template
   ansible.builtin.set_fact:

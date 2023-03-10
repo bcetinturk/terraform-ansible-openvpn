@@ -94,9 +94,15 @@
     state: present
     reload: true
 
-- name: Print Default Network Interface
+- name: Get Interface Name From Provided IP Address
+  ansible.builtin.set_fact:
+    interface_name: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') |
+      map('extract', vars) | selectattr('ipv4.address', 'match', machine_ip) |
+      map(attribute='device') | first }}"
+
+- name: Debug interface_name
   ansible.builtin.debug:
-    msg: "{{ ansible_default_ipv4 }}"
+    var: interface_name
 
 # TODO: TAO-1: 10.8.0.0/8 part should be read from variable
 - name: Add Masquerading Rules to POSTROUTING Chain
@@ -109,7 +115,7 @@
     block: |
       *nat
       :POSTROUTING ACCEPT [0:0]
-      -A POSTROUTING -s 10.8.0.0/24 -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+      -A POSTROUTING -s 10.8.0.0/24 -o {{ interface_name }} -j MASQUERADE
       COMMIT
 
 - name: Set Forwarding Policy to ACCEPT

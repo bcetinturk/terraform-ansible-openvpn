@@ -17,7 +17,8 @@ Vagrant.configure("2") do |config|
     vm_config.vm.provision "ansible" do |ansible|
       ansible.playbook = "openvpn.yml"
       ansible.extra_vars = {
-        target_type: "vagrant"
+        target_type: "vagrant",
+        machine_ip: "192.168.33.10"
       }
     end
 
