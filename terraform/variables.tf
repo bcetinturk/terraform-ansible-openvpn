@@ -17,3 +17,13 @@ variable "subscription_id" {
   type        = string
   description = "Subscription ID. Get using 'az account subscription list' command."
 }
+
+variable "region" {
+  type        = string
+  description = "az account list-locations --output table"
+}
+
+variable "nsg_source_address" {
+  type        = string
+  description = "Public ip address of local machine. Used to restrict SSH access. Use 'curl ifconfig.me'"
+}

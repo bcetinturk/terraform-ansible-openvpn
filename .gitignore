@@ -54,3 +54,5 @@ terraform.rc
 
 *.ovpn
 *.log
+**/*.tfplan
+**/id_rsa
