@@ -56,3 +56,4 @@ terraform.rc
 *.log
 **/*.tfplan
 **/id_rsa
+inventory/hosts

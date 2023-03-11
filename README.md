@@ -9,6 +9,8 @@ az ad sp create-for-rbac --name <principal_name> --role Contributor --scopes /su
 
 ### Run Terraform
 
+Create terraform.tfvars in terraform directory
+
 ```
 terraform plan -out main.tfplan
 terraform apply main.tfplan

@@ -94,11 +94,27 @@
     state: present
     reload: true
 
+- name: Set Server IP to Vagrant IP
+  when: target_type == "vagrant"
+  ansible.builtin.set_fact:
+    vpn_server_ip: "{{ machine_ip }}"
+
+- name: Set Server IP to VM IP
+  when: target_type == "terraform"
+  ansible.builtin.set_fact:
+    vpn_server_ip: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+
 - name: Get Interface Name From Provided IP Address
+  when: target_type == "vagrant"
   ansible.builtin.set_fact:
     interface_name: "{{ ansible_interfaces | map('regex_replace', '^', 'ansible_') |
-      map('extract', vars) | selectattr('ipv4.address', 'match', machine_ip) |
+      map('extract', vars) | selectattr('ipv4.address', 'match', vpn_server_ip) |
       map(attribute='device') | first }}"
+
+- name: Get Interface Name From Provided IP Address
+  when: target_type == "terraform"
+  ansible.builtin.set_fact:
+    interface_name: eth0
 
 - name: Debug interface_name
   ansible.builtin.debug:
