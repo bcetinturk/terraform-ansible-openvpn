@@ -22,3 +22,7 @@ terraform apply main.tfplan
 terraform output -raw tls_private_key > id_rsa
 chmod 0400 id_rsa
 ```
+### Ansible Playbook
+```
+ansible-playbook -i inventory/hosts openvpn.yml
+```
